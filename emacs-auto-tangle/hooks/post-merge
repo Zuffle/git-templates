@@ -1,4 +1,5 @@
 #!/bin/sh
+echo post-merge hook
 
 dir=$(pwd)
 
