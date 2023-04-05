@@ -1,0 +1,17 @@
+#!/bin/sh
+echo post-merge hook
+
+dir=$(pwd)
+
+tangle_script="${dir}/init-tangle.sh"
+
+
+${tangle_script}
+
+emacs --script "~/.config/emacs/init.el"
+
+tar_file="emacs-$(date -I).tar.gz"
+
+tar -czf $tar_file "~/.config/emacs"
+
+cp $tar_file '/z/.config/.'
