@@ -3,15 +3,20 @@ echo post-merge hook
 
 dir=$(pwd)
 
+cd ~
+
 tangle_script="${dir}/init-tangle.sh"
-
-
-${tangle_script}
-
-emacs --script "~/.config/emacs/init.el"
-
 tar_file="emacs-$(date -I).tar.gz"
+untar_command="tar -xf .config/last-tar_$tar_file --overwrite"
 
-tar -czf $tar_file "~/.config/emacs"
+# ${tangle_script}
 
-cp $tar_file '/z/.config/.'
+emacs -batch --load=.config/emacs/init.el --eval "(org-bable-tangle \".config/litfig/litfig.org\")"
+
+tar -czf "/tmp/$tar_file" .config/emacs/init.el .config/emacs/early-init.el .config/emacs/straight
+
+rsync /tmp/$tar_file -e ssh sero509:~/.config/last-tar_$tar_file
+
+ssh sero509 $untar_command
+
+

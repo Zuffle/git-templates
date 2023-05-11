@@ -1,0 +1,24 @@
+#!/bin/sh
+echo pre-push hook
+
+dir=$(pwd)
+
+cd ~
+
+tangle_script="${dir}/init-tangle.sh"
+date_var=$(date -I)
+tar_file="emacs-$date_var.tar.gz"
+untar_command="tar -xf .config/last-emacs.tar.gz --overwrite"
+mv_oldemacs="rm -rf .config/old_emacs ; mv .config/emacs .config/old_emacs"
+
+# ${tangle_script}
+
+emacs -batch --load=.config/emacs/init.el --eval "(org-babel-tangle-file \".config/litfig/litfig.org\")"
+
+tar -czf "/tmp/$tar_file" .config/emacs/init.el .config/emacs/early-init.el .config/emacs/straight
+
+rsync /tmp/$tar_file -e ssh sero509:~/.config/last-emacs.tar.gz
+
+ssh sero509 "$mv_oldemacs;$untar_command"
+
+
