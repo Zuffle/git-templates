@@ -9,16 +9,17 @@ tangle_script="${dir}/init-tangle.sh"
 date_var=$(date -I)
 tar_file="emacs-$date_var.tar.gz"
 untar_command="tar -xf .config/last-emacs.tar.gz --overwrite"
-mv_oldemacs="rm -rf .config/old_emacs ; mv .config/emacs .config/old_emacs"
+rm_straight="rm -rf .config/emacs/straight"
+mv_oldemacs="rm -rf .config/last_emacs ; mv .config/emacs .config/last_emacs"
 
 # ${tangle_script}
 
-emacs -batch --load=.config/emacs/init.el --eval "(princ org-version) (org-babel-tangle-file \".config/litfig/litfig.org\")"
+emacs -batch --load=.config/emacs/init.el --eval "(org-babel-tangle-file \".config/litfig/litfig.org\")"
 
-tar -czf "/tmp/$tar_file" .config/emacs/init.el .config/emacs/early-init.el .config/emacs/straight
+tar -czf "/tmp/$tar_file" .config/emacs/init.el .config/emacs/early-init.el .config/emacs/straight/repos
 
 rsync /tmp/$tar_file -e ssh sero509:~/.config/last-emacs.tar.gz
 
-ssh sero509 "$mv_oldemacs;$untar_command"
+ssh sero509 "$untar_command"
 
 
